@@ -37,6 +37,3 @@ def test_read_orbit():
 
     assert test_orbit_values['peri'] == 1.133
     assert test_orbit_units['spatial'] == 'AU'
-
-
-test_read_orbit()
