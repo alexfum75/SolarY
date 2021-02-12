@@ -7,7 +7,7 @@
                "arg_peri": 178.8
             },
   "units" : {
-              "spatial" : "AU",
-              "angle" : "deg"
+              "spatial_dim" : "AU",
+              "angle_dim" : "deg"
             }
 }

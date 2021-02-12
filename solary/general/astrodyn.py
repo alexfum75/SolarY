@@ -4,15 +4,23 @@ astrodyn.py
 Miscellaneous functions regarding astro-dynamical topics can be found here.
 
 """
-import typing as t
+
 # Import standard modules
 import math
+from dataclasses import dataclass
+import json
+from pathlib import Path
+import typing as t
+
 
 # Import solary
 import solary
 
 
-def tisserand(sem_maj_axis_obj: float, inc: float, ecc: float, sem_maj_axis_planet: t.Optional[float] = None) -> float:
+def tisserand(sem_maj_axis_obj: float,
+              inc: float,
+              ecc: float,
+              sem_maj_axis_planet: t.Optional[float] = None) -> float:
     """
     Compute the Tisserand parameter of an object w.r.t. a larger object. If no semi-major axis of
     a larger object is given, the values for Jupiter are assumed.
@@ -187,6 +195,7 @@ def sphere_of_influence(sem_maj_axis: float, minor_mass: float, major_mass: floa
     return soi_radius
 
 
+@dataclass
 class Orbit:
     """
     The Orbit class is a base class for further classes. Basic orbital computations are performed
@@ -219,33 +228,25 @@ class Orbit:
 
     """
 
-    def __init__(self, orbit_values: t.Dict[str, float], orbit_units: t.Dict[str, float]) -> None:
-        """
-        Init function.
+    # Setting attribute placeholders
+    peri: float
+    ecc: float
+    incl: float
+    long_asc_node: float
+    arg_peri: float
 
-        Parameters
-        ----------
-        orbit_values : dict
-            Dictionary that contains the orbit's values. The spatial and angle unit are given by
-            the orbit_units dictionary
-        orbit_units : dict
-            Dictionary that contains the orbit's values corresponding units (spatial and angle).
+    # Set the units dictionary
+    spatial_dim: str
+    angle_dim: str
 
-        Returns
-        -------
-        None.
 
-        """
+    @staticmethod
+    def load(config_path: t.Union[Path, str]) -> "Orbit":
+        """Factory method to construct an Orbit object from a JSON file."""
+        with Path(config_path).open(mode="r") as temp_obj:
+            orbit_values = json.load(temp_obj)
+            return Orbit(**orbit_values['values'], **orbit_values['units'])
 
-        # Setting attribute placeholders
-        self.peri = orbit_values["peri"]  # type: float
-        self.ecc = orbit_values["ecc"]  # type: float
-        self.incl = orbit_values["incl"]  # type: float
-        self.long_asc_node = orbit_values["long_asc_node"]  # type: float
-        self.arg_peri = orbit_values["arg_peri"]  # type: float
-
-        # Set the units dictionary
-        self.units_dict = orbit_units
 
     @property
     def semi_maj_axis(self) -> float:
